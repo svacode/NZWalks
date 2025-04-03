@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using UdemyProject.Data;
 using UdemyProject.Models.Domain;
 using UdemyProject.Models.DTOs;
@@ -103,9 +104,9 @@ namespace UdemyProject.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            var regionsDomain = dbContext.Regions.ToList();
+            var regionsDomain = await dbContext.Regions.ToListAsync(); //you continue working while I wait for my query results
             //mapping domain to dto
             var regionsDto = new List<RegionDto>();
             foreach (var region in regionsDomain)
@@ -124,9 +125,9 @@ namespace UdemyProject.Controllers
 
         [HttpGet]
         [Route("{id:Guid}")]
-        public IActionResult GetById([FromRoute] Guid id)
+        public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var regionDomain = dbContext.Regions.Find(id);
+            var regionDomain = await dbContext.Regions.FindAsync(id);
             if (regionDomain == null)
             {
                 return BadRequest();
@@ -143,7 +144,7 @@ namespace UdemyProject.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateRegion([FromRoute] AddRegionRequestDto addRegionRequestDto)
+        public async Task<IActionResult> CreateRegion([FromRoute] AddRegionRequestDto addRegionRequestDto)
         {
             //map dto to domain
             var newRegionDomain = new Region()
@@ -153,8 +154,8 @@ namespace UdemyProject.Controllers
                 RegionImageUrl = addRegionRequestDto.RegionImageUrl,
             };
             //add region to db and save
-            dbContext.Add(newRegionDomain);
-            dbContext.SaveChanges();
+            await dbContext.AddAsync(newRegionDomain);
+            await dbContext.SaveChangesAsync();
             //map domain back to dto
             var regionDto = new RegionDto()
             {
@@ -169,11 +170,11 @@ namespace UdemyProject.Controllers
 
         [HttpPut]
         [Route("{id:Guid}")]
-        public IActionResult UpdateRegions([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
+        public async Task<IActionResult> UpdateRegions([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
 
             //var updatedRegionDomain = dbContext.Regions.Find(id);
-            var updatedRegionDomain = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var updatedRegionDomain = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if (updatedRegionDomain == null)
             {
                 return NotFound();
@@ -181,7 +182,7 @@ namespace UdemyProject.Controllers
             updatedRegionDomain.Name = updateRegionRequestDto.Name;
             updatedRegionDomain.Code = updateRegionRequestDto.Code;
             updatedRegionDomain.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             var updatedRegionDto = new RegionDto()
             {
@@ -195,16 +196,16 @@ namespace UdemyProject.Controllers
 
         [HttpDelete]
         [Route("{id:Guid})")]
-        public IActionResult DeleteRegions([FromRoute] Guid id)
+        public async Task<IActionResult> DeleteRegions([FromRoute] Guid id)
         {
             
-            var deletedRegion = dbContext.Regions.FirstOrDefault(x => x.Id == id);
+            var deletedRegion = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
             if(deletedRegion == null)
             {
                 return NotFound();
             }
             dbContext.Regions.Remove(deletedRegion);
-            dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
             return Ok(GetAll());
         }
 
