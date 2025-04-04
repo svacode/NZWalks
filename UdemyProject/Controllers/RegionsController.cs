@@ -117,17 +117,6 @@ namespace UdemyProject.Controllers
             //using interface to bring out data
             var regionsDomain = await regionRepository.GetAllAsync();
             //mapping domain to dto
-            //var regionsDto = new List<RegionDto>();
-            //foreach (var region in regionsDomain)
-            //{
-            //    regionsDto.Add(new RegionDto()
-            //    {
-            //        Id = region.Id,
-            //        Name = region.Name,
-            //        Code = region.Code,
-            //        RegionImageUrl = region.RegionImageUrl,
-            //    });
-            //}
             var regionsDto = mapper.Map<List<RegionDto>>(regionsDomain);
             return Ok(regionsDto);
         }
