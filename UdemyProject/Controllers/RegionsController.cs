@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using UdemyProject.Data;
 using UdemyProject.Models.Domain;
 using UdemyProject.Models.DTOs;
+using UdemyProject.Repositories;
 
 //namespace UdemyProject.Controllers
 //{
@@ -98,15 +99,20 @@ namespace UdemyProject.Controllers
     public class RegionsController : ControllerBase
     {
         private readonly NZWalksDbContext dbContext;
-        public RegionsController(NZWalksDbContext dbContext)
+        private readonly IRegionRepository regionRepository;
+
+        public RegionsController(NZWalksDbContext dbContext, IRegionRepository regionRepository)
         {
             this.dbContext = dbContext;
+            this.regionRepository = regionRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var regionsDomain = await dbContext.Regions.ToListAsync(); //you continue working while I wait for my query results
+            //you continue working while I wait for my query results
+            //using interface to bring out data
+            var regionsDomain = await regionRepository.GetAllAsync();
             //mapping domain to dto
             var regionsDto = new List<RegionDto>();
             foreach (var region in regionsDomain)
@@ -127,7 +133,7 @@ namespace UdemyProject.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var regionDomain = await dbContext.Regions.FindAsync(id);
+            var regionDomain = await regionRepository.GetByIdAsync(id);
             if (regionDomain == null)
             {
                 return BadRequest();
@@ -154,8 +160,7 @@ namespace UdemyProject.Controllers
                 RegionImageUrl = addRegionRequestDto.RegionImageUrl,
             };
             //add region to db and save
-            await dbContext.AddAsync(newRegionDomain);
-            await dbContext.SaveChangesAsync();
+            await regionRepository.CreateAsync(newRegionDomain);
             //map domain back to dto
             var regionDto = new RegionDto()
             {
@@ -172,23 +177,22 @@ namespace UdemyProject.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> UpdateRegions([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
-
-            //var updatedRegionDomain = dbContext.Regions.Find(id);
-            var updatedRegionDomain = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
-            if (updatedRegionDomain == null)
+            var regionDomainModel = new Region()
+            {
+                Name = updateRegionRequestDto.Name,
+                Code = updateRegionRequestDto.Code,
+                RegionImageUrl = updateRegionRequestDto.RegionImageUrl,
+            };
+            regionDomainModel = await regionRepository.UpdateAsync(id, regionDomainModel);
+            if (regionDomainModel == null)
             {
                 return NotFound();
             }
-            updatedRegionDomain.Name = updateRegionRequestDto.Name;
-            updatedRegionDomain.Code = updateRegionRequestDto.Code;
-            updatedRegionDomain.RegionImageUrl = updateRegionRequestDto.RegionImageUrl;
-            await dbContext.SaveChangesAsync();
-
             var updatedRegionDto = new RegionDto()
             {
-                Name = updatedRegionDomain.Name,
-                Code = updatedRegionDomain.Code,
-                RegionImageUrl = updatedRegionDomain.RegionImageUrl,
+                Name = regionDomainModel.Name,
+                Code = regionDomainModel.Code,
+                RegionImageUrl = regionDomainModel.RegionImageUrl,
             };
             return Ok(updatedRegionDto);
 
@@ -199,14 +203,18 @@ namespace UdemyProject.Controllers
         public async Task<IActionResult> DeleteRegions([FromRoute] Guid id)
         {
             
-            var deletedRegion = await dbContext.Regions.FirstOrDefaultAsync(x => x.Id == id);
+            var deletedRegion = await regionRepository.DeleteAsync(id);
             if(deletedRegion == null)
             {
                 return NotFound();
             }
-            dbContext.Regions.Remove(deletedRegion);
-            await dbContext.SaveChangesAsync();
-            return Ok(GetAll());
+            var deletedModelDto = new RegionDto()
+            {
+                Name = deletedRegion.Name,
+                Code = deletedRegion.Code,
+                RegionImageUrl = deletedRegion.RegionImageUrl,
+            };
+            return Ok(deletedModelDto);
         }
 
 
