@@ -7,7 +7,7 @@ namespace UdemyProject.Data
     public class NZWalksDbContext : DbContext
     {
         //private string readonly _dbContext;
-        public NZWalksDbContext(DbContextOptions<NZWalksDbContext> DbContextOptions) : base(DbContextOptions)
+        public NZWalksDbContext(DbContextOptions<NZWalksDbContext> options) : base(options)
         {
 
         }
@@ -88,7 +88,8 @@ namespace UdemyProject.Data
                 },
             };
 
-            modelBuilder.Entity<RegionsController>().HasData(regions);
+            modelBuilder.Entity<Region>().HasData(regions);
+
         }
     }
 }

@@ -7,91 +7,6 @@ using UdemyProject.Models.Domain;
 using UdemyProject.Models.DTOs;
 using UdemyProject.Repositories;
 
-//namespace UdemyProject.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    public class RegionsController : ControllerBase
-//    {
-//        private readonly NZWalksDbContext dbContext;
-
-//        public RegionsController(NZWalksDbContext dbContext)
-//        {
-//            this.dbContext = dbContext;
-//        }
-
-//        [HttpGet]
-//        public IActionResult GetAll()
-//        {
-//            var regionsDomain = dbContext.Regions.ToList();
-//            var regionsDto = new List<RegionDto>();
-//            foreach (var region in regionsDomain)
-//            {
-//                regionsDto.Add(new RegionDto()
-//                {
-//                    Id = region.Id,
-//                    Code = region.Code,
-//                    Name = region.Name,
-//                    RegionImageUrl = region.RegionImageUrl,
-//                });
-//            }
-//            return Ok(regionsDto);
-//        }
-
-//        [HttpGet]
-//        [Route("{id:Guid}")]
-//        public IActionResult GetById([FromRoute] Guid id)
-//        {
-//            var regionDomain = dbContext.Regions.Find(id);
-//            if (regionDomain == null)
-//            {
-//                return BadRequest();
-//            }
-//            var regionDto = new RegionDto()
-//            {
-//                Id = regionDomain.Id,
-//                Code = regionDomain.Code,
-//                Name = regionDomain.Name,
-//                RegionImageUrl = regionDomain.RegionImageUrl,
-//            };
-
-//            return Ok(regionDto);
-//        }
-
-//        [HttpPost]
-//        public IActionResult AddRegion([FromBody] AddRegionRequestDto addRegionRequestDto)
-//        {
-//            if (addRegionRequestDto == null)
-//            {
-//                return BadRequest();
-//            }
-//            //map dto to domain
-//            var RegionDomainModel = new Region()
-//            {
-//                Code = addRegionRequestDto.Code,
-//                Name = addRegionRequestDto.Name,
-//                RegionImageUrl = addRegionRequestDto.RegionImageUrl,
-//            };
-
-//            //use domain model to create region
-//            dbContext.Regions.Add(RegionDomainModel);
-//            dbContext.SaveChanges();
-//            //map domain model back to dto
-//            var regionDto = new RegionDto()
-//            {
-//                Id = RegionDomainModel.Id,
-//                Code = RegionDomainModel.Code,
-//                Name = RegionDomainModel.Name,
-//                RegionImageUrl = RegionDomainModel.RegionImageUrl,
-//            };
-//            return CreatedAtAction(nameof(GetById),new { id = RegionDomainModel.Id }, regionDto);
-
-//        }
-//    }
-//}
-
-// Rewriting
-
 namespace UdemyProject.Controllers
 {
     [Route("api/[controller]")]
@@ -99,13 +14,13 @@ namespace UdemyProject.Controllers
 
     public class RegionsController : ControllerBase
     {
-        private readonly NZWalksDbContext dbContext;
+        //private readonly NZWalksDbContext dbContext;
         private readonly IRegionRepository regionRepository;
         private readonly IMapper mapper;
 
-        public RegionsController(NZWalksDbContext dbContext, IRegionRepository regionRepository, IMapper mapper)
+        public RegionsController(/*NZWalksDbContext dbContext,*/ IRegionRepository regionRepository, IMapper mapper)
         {
-            this.dbContext = dbContext;
+            //this.dbContext = dbContext;
             this.regionRepository = regionRepository;
             this.mapper = mapper;
         }

@@ -12,6 +12,10 @@ namespace UdemyProject.Mappings
             CreateMap<Region, UpdateRegionRequestDto>().ReverseMap();
             CreateMap<Region, AddRegionRequestDto>().ReverseMap();
             CreateMap<AddWalksRequestDto,Walk>().ReverseMap();
+            CreateMap<WalkDto, Walk>().ReverseMap();
+            CreateMap<DifficultyDto, Difficulty>().ReverseMap();
+            CreateMap<UpdateWalkRequestDto, Walk>().ReverseMap();
+
         }
     }
 }
