@@ -37,7 +37,7 @@ namespace UdemyProject.Repositories
         public async Task<List<Walk>> GetAllAsync()
         {
             return await dbContext.Walks.Include("Difficulty").Include("Region").ToListAsync();
-            
+
         }
 
         public async Task<Walk?> GetByIdAsync(Guid id)
@@ -51,20 +51,24 @@ namespace UdemyProject.Repositories
 
         public async Task<Walk?> UpdateAsync(Guid id, Walk walk)
         {
-            var walkExists = await dbContext.Walks.FirstOrDefaultAsync(x => x.Id == id);
+            var walkExists = await dbContext.Walks.Include("Difficulty").Include("Region").FirstOrDefaultAsync(x => x.Id == id);
             if (walkExists == null)
             {
                 return null;
             }
 
-           walkExists.Name = walk.Name;
-           walkExists.Description = walk.Description;
-           walkExists.WalkImageUrl = walk.WalkImageUrl;
-           walkExists.WalkInKm = walkExists.WalkInKm;
-           walkExists.DifficultyId = walkExists.DifficultyId;
-           walkExists.RegionId = walkExists.RegionId;
-           await dbContext.SaveChangesAsync();
-           return walkExists;
+            walkExists.Name = walk.Name;
+            walkExists.Description = walk.Description;
+            walkExists.WalkImageUrl = walk.WalkImageUrl;
+            walkExists.WalkInKm = walk.WalkInKm;
+            walkExists.DifficultyId = walk.DifficultyId;
+            walkExists.RegionId = walk.RegionId;
+            await dbContext.SaveChangesAsync();
+            walkExists.Difficulty = await dbContext.Difficulties
+        .FirstOrDefaultAsync(d => d.Id == walkExists.DifficultyId);
+            walkExists.Region = await dbContext.Regions
+                .FirstOrDefaultAsync(r => r.Id == walkExists.RegionId);
+            return walkExists;
         }
     }
 }

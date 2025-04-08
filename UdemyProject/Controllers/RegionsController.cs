@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using UdemyProject.CustomActionFilters;
 using UdemyProject.Data;
 using UdemyProject.Models.Domain;
 using UdemyProject.Models.DTOs;
@@ -50,28 +51,31 @@ namespace UdemyProject.Controllers
         }
 
         [HttpPost]
+        [ValidateModel]
         public async Task<IActionResult> CreateRegion([FromRoute] AddRegionRequestDto addRegionRequestDto)
-        {
-            var newRegionDomain = mapper.Map<Region>(addRegionRequestDto);
-            //add region to db and save
-            newRegionDomain = await regionRepository.CreateAsync(newRegionDomain);
-            var regionDto = mapper.Map<RegionDto>(newRegionDomain);
-            return CreatedAtAction(nameof(GetById), new { id = newRegionDomain.Id }, regionDto);
+        {        
+                var newRegionDomain = mapper.Map<Region>(addRegionRequestDto);
+                //add region to db and save
+                newRegionDomain = await regionRepository.CreateAsync(newRegionDomain);
+                var regionDto = mapper.Map<RegionDto>(newRegionDomain);
+                return CreatedAtAction(nameof(GetById), new { id = newRegionDomain.Id }, regionDto);
+            
         }
 
         [HttpPut]
         [Route("{id:Guid}")]
+        [ValidateModel]
         public async Task<IActionResult> UpdateRegions([FromRoute] Guid id, [FromBody] UpdateRegionRequestDto updateRegionRequestDto)
         {
-            var regionDomainModel = mapper.Map<Region>(updateRegionRequestDto);
-            regionDomainModel = await regionRepository.UpdateAsync(id, regionDomainModel);
-            if (regionDomainModel == null)
-            {
-                return NotFound();
-            }
-            var updatedRegionDto = mapper.Map<RegionDto>(regionDomainModel);
-            return Ok(updatedRegionDto);
-
+           
+                var regionDomainModel = mapper.Map<Region>(updateRegionRequestDto);
+                regionDomainModel = await regionRepository.UpdateAsync(id, regionDomainModel);
+                if (regionDomainModel == null)
+                {
+                    return NotFound();
+                }
+                var updatedRegionDto = mapper.Map<RegionDto>(regionDomainModel);
+            return Ok(updatedRegionDto);  
         }
 
         [HttpDelete]
