@@ -7,12 +7,16 @@ using UdemyProject.Data;
 using UdemyProject.Models.Domain;
 using UdemyProject.Models.DTOs;
 using UdemyProject.Repositories;
+using System; // Ensure this is included for predefined types like System.String and System.Object
+using System.Collections.Generic; // For collections like List<T>
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization; // For Task<T>
 
 namespace UdemyProject.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-
+    [Authorize]
     public class RegionsController : ControllerBase
     {
         //private readonly NZWalksDbContext dbContext;
