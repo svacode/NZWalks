@@ -56,7 +56,7 @@ namespace UdemyProject.Controllers
 
         [HttpPost]
         [ValidateModel]
-        public async Task<IActionResult> CreateRegion([FromRoute] AddRegionRequestDto addRegionRequestDto)
+        public async Task<IActionResult> CreateRegion([FromBody] AddRegionRequestDto addRegionRequestDto)
         {        
                 var newRegionDomain = mapper.Map<Region>(addRegionRequestDto);
                 //add region to db and save
